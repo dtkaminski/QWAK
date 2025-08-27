@@ -94,11 +94,15 @@
       padding:.85rem 1rem; background: var(--primary-navy); color:#fff;
     }
     .nav-drawer__header .brand{ display:flex; align-items:center; gap:.5rem; font-weight:800; }
-.nav-drawer__header img{
-  max-height: 28px;   /* size control */
-  width: auto;        /* keep aspect */
-  height: auto;       /* keep aspect */
+.nav-drawer__header .brand img {
+  max-height: 28px;   /* keeps it small */
+  max-width: 28px;    /* stops it from stretching horizontally */
+  width: auto;
+  height: auto;
+  display: block;
+  margin-right: .5rem;
 }
+
     .menu-close{ position:relative; width:26px; height:26px; border:0; background:none; cursor:pointer; }
     .menu-close span{ position:absolute; left:4px; right:4px; top:50%; height:3px; background:#fff; border-radius:2px; }
     .menu-close span:first-child{ transform:translateY(-50%) rotate(45deg); }
