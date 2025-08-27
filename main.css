@@ -82,7 +82,7 @@ a:hover {
 
 /* Logo sizing – single source of truth */
 .site-header .logo img.logo-lockup {
-  height: clamp(40px, 4vw, 56px); /* nice range */
+  height: auto;
   width: auto;
   display: block;
 }
