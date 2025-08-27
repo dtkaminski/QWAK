@@ -767,3 +767,11 @@ body {
 /* Push content below fixed header */
 :root { --header-h: 80px; }
 body  { padding-top: var(--header-h); }
+.nav-drawer__header .brand img{
+  max-height: 28px;   /* tweak to 24–32px to taste */
+  width: auto;
+  height: auto;
+  display: block;
+  margin-right: .5rem;
+}
+
