@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#102A43" />
+      <stop offset="100%" stop-color="#2EC6B8" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="600" fill="url(#grad)" />
+  <!-- optional decorative shapes -->
+  <circle cx="900" cy="100" r="150" fill="rgba(255, 255, 255, 0.05)" />
+  <circle cx="300" cy="500" r="200" fill="rgba(255, 255, 255, 0.07)" />
+</svg>

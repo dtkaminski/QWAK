@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  This SVG simply references the PNG version of the Qwak logo.  It preserves
+  the original proportions and colours of the logo while allowing it to be
+  treated as a vector asset by design tools and browsers.  Should you wish
+  to trace the PNG into pure vector paths in the future, replace the
+  <image> element with appropriate <path> definitions.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="500" height="500">
+  <image href="qwak-logo.png" width="500" height="500" />
+</svg>

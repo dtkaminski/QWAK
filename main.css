@@ -1,0 +1,769 @@
+/*
+  Main stylesheet for Qwak landing page
+  Imports tokens for colour and typography definitions.
+*/
+
+@import url('tokens.css');
+
+/* ===== Qwak Brand Tokens (overrides / fallbacks) ===== */
+:root {
+  /* Core */
+  --primary-navy: #0C1B33;
+  --white: #FFFFFF;
+  --duck-yellow: #FFC933;
+
+  /* Support */
+  --pixel-purple: #6C3BFF;
+  --teal-signal: #00C2B2;
+  --sky-blue: #E5EFF9;
+
+  /* Greys */
+  --slate-grey: #445566;
+  --soft-grey: #E0E7F0;
+  --charcoal-grey: #1E1E24;
+
+  /* Accent pops */
+  --pixel-pink: #FF3F81;
+  --mint-green: #62F4D4;
+
+  /* Semantic (used throughout) */
+  --bg: var(--white);
+  --text: var(--primary-navy);
+  --card: var(--white);
+  --cta-purple: var(--pixel-purple);
+  --accent-teal: var(--teal-signal);
+  --success: var(--mint-green);
+  --warn: var(--pixel-pink);
+}
+
+/* Basic reset */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family-base);
+  color: var(--text);
+  background: var(--bg);
+  line-height: 1.6;
+}
+
+a {
+  color: var(--accent-teal);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--primary-navy);
+}
+
+/* ===== Header (fixed full width) ===== */
+.site-header {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  background: var(--primary-navy);
+  padding: 0.9rem 1.5rem;
+  z-index: 1000;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+
+/* Container for logo + hamburger */
+.header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Logo sizing – single source of truth */
+.site-header .logo img.logo-lockup {
+  height: clamp(40px, 4vw, 56px); /* nice range */
+  width: auto;
+  display: block;
+}
+
+
+
+
+nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-weight: var(--font-weight-semi);
+}
+
+nav a {
+  padding: 0.25rem 0.5rem;
+  color: var(--text);
+}
+
+nav a:hover {
+  color: var(--primary-navy);
+}
+
+/* ===== Buttons ===== */
+.btn-primary {
+  background: var(--cta-purple); /* Pixel Purple primary CTA */
+  color: #fff;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  font-weight: var(--font-weight-semi);
+  display: inline-block;
+  transition: background 0.2s ease, transform 0.12s ease;
+}
+
+.btn-primary:hover {
+  background: #5a2fe0; /* slightly darker purple */
+}
+
+.btn-primary:active {
+  transform: translateY(1px);
+}
+
+/* Secondary CTA (Teal) */
+.btn-secondary {
+  background: var(--accent-teal);
+  color: var(--primary-navy);
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  font-weight: var(--font-weight-semi);
+  display: inline-block;
+  transition: background 0.2s ease, transform 0.12s ease;
+}
+
+.btn-secondary:hover {
+  background: #00ad9f; /* slightly darker teal */
+}
+
+.btn-secondary:active {
+  transform: translateY(1px);
+}
+
+/* Utility: Duck accent */
+.badge-duck,
+.pill--duck {
+  background: var(--duck-yellow);
+  color: var(--primary-navy);
+}
+
+/* Hero section (Navy → Teal by default; swap to Purple by changing --hero-stop) */
+.hero {
+  --hero-stop: var(--accent-teal); /* set to var(--pixel-purple) for Navy→Purple */
+  position: relative;
+  padding: 6rem 2rem 4rem;
+  text-align: center;
+  color: var(--card);
+  background: linear-gradient(135deg, var(--primary-navy) 0%, var(--hero-stop) 100%);
+  overflow: hidden;
+}
+
+.hero h1 {
+  font-size: var(--font-size-h1);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: 1rem;
+  color: #FFFFFF; /* white on dark hero */
+}
+
+.hero p {
+  font-size: 1.25rem;
+  margin: 0 auto 2rem;
+  max-width: 600px;
+  color: var(--sky-blue);
+}
+
+.pill {
+  display: inline-block;
+  background: var(--accent-teal);
+  color: var(--primary-navy);
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-semi);
+  text-transform: uppercase;
+  letter-spacing: 0.05rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  margin-bottom: 1rem;
+}
+
+/* Section wrapper to apply consistent spacing */
+section {
+  padding: 4rem 2rem;
+}
+
+/* Trust bar (Trust/Compliance: Teal + Sky Blue on white card) */
+.trust-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+  background: var(--card);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  border: 1px solid var(--soft-grey);
+  border-radius: 12px;
+  padding: 2rem;
+  margin-top: -3rem;
+  margin-bottom: 3rem;
+}
+
+.trust-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1 1 180px;
+}
+
+.trust-item svg {
+  width: 24px;
+  height: 24px;
+  color: var(--accent-teal);
+  flex-shrink: 0;
+  background: var(--sky-blue);
+  border-radius: 6px;
+  padding: 4px;
+}
+
+.trust-item p {
+  font-size: var(--font-size-body);
+  color: var(--primary-navy);
+  font-weight: var(--font-weight-semi);
+}
+
+/* How it works */
+.steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: center;
+}
+
+.step {
+  flex: 1 1 250px;
+  background: var(--card);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid var(--soft-grey);
+}
+
+.step:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+}
+
+.step svg {
+  width: 40px;
+  height: 40px;
+  color: var(--accent-teal);
+  margin-bottom: 1rem;
+}
+
+.step h3 {
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-semi);
+  margin-bottom: 0.5rem;
+  color: var(--primary-navy);
+}
+
+.step p {
+  font-size: 0.95rem;
+  color: var(--slate-grey);
+}
+
+/* Value props grid */
+.value-props {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.value-card {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid var(--soft-grey);
+}
+
+.value-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+}
+
+.value-card h4 {
+  font-size: 1.25rem;
+  font-weight: var(--font-weight-semi);
+  color: var(--primary-navy);
+}
+
+.value-card p {
+  font-size: 0.95rem;
+  color: var(--slate-grey);
+  flex-grow: 1;
+}
+
+/* Features grid */
+.features {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.feature-card {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid var(--soft-grey);
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+}
+
+.feature-card svg {
+  width: 36px;
+  height: 36px;
+  color: var(--cta-purple); /* Purple icon for feature emphasis */
+  margin-bottom: 1rem;
+}
+
+.feature-card h4 {
+  font-size: 1.1rem;
+  font-weight: var(--font-weight-semi);
+  margin-bottom: 0.5rem;
+  color: var(--primary-navy);
+}
+
+.feature-card p {
+  font-size: 0.9rem;
+  color: var(--slate-grey);
+}
+
+/* Why Qwak section */
+.why {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 3rem 2rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  border: 1px solid var(--soft-grey);
+}
+
+.why-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.why-item {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.why-item svg {
+  width: 28px;
+  height: 28px;
+  color: var(--success); /* Mint Green for positive signals */
+  flex-shrink: 0;
+}
+
+.why-item h5 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: var(--font-weight-semi);
+  color: var(--primary-navy);
+}
+
+.why-item p {
+  margin-top: 0.25rem;
+  font-size: 0.9rem;
+  color: var(--slate-grey);
+}
+
+/* Security section (Trust/Compliance: Teal + Sky Blue) */
+.security {
+  background: var(--sky-blue);
+  border-radius: 12px;
+  padding: 3rem 2rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  border: 1px solid var(--soft-grey);
+}
+
+.security ul {
+  list-style: none;
+  padding-left: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.security li {
+  display: flex;
+  gap: 1rem;
+}
+
+.security li svg {
+  width: 26px;
+  height: 26px;
+  color: var(--accent-teal);
+  flex-shrink: 0;
+}
+
+.security li p {
+  font-size: 0.9rem;
+  color: var(--primary-navy);
+}
+
+.security a {
+  color: var(--accent-teal);
+  text-decoration: underline;
+  display: inline-block;
+  margin-top: 1rem;
+}
+
+/* FAQ section */
+.faq {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 3rem 2rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  border: 1px solid var(--soft-grey);
+}
+
+.faq details {
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--soft-grey);
+  padding: 0.5rem 0;
+}
+
+.faq summary {
+  font-size: 1rem;
+  font-weight: var(--font-weight-semi);
+  color: var(--primary-navy);
+  cursor: pointer;
+}
+
+.faq summary:hover {
+  color: var(--cta-purple);
+}
+
+.faq p {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--slate-grey);
+}
+
+/* CTA band */
+.cta-band {
+  text-align: center;
+  background: var(--cta-purple); /* Purple primary CTA band */
+  color: #fff;
+  padding: 4rem 2rem;
+  border-radius: 12px;
+  margin-top: 4rem;
+}
+
+.cta-band h3 {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: 1rem;
+}
+
+.cta-band p {
+  font-size: 1.05rem;
+  margin-bottom: 2rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.cta-band a {
+  background: #fff;
+  color: var(--cta-purple);
+  padding: 0.8rem 1.6rem;
+  border-radius: 6px;
+  font-weight: var(--font-weight-semi);
+  transition: background 0.2s ease, color 0.2s ease, transform 0.12s ease;
+}
+
+.cta-band a:hover {
+  background: #efeaff; /* very light purple tint */
+}
+
+.cta-band a:active {
+  transform: translateY(1px);
+}
+
+footer {
+  margin-top: 4rem;
+  padding: 2rem;
+  text-align: center;
+  font-size: var(--font-size-small);
+  color: var(--slate-grey);
+}
+
+/* ===== Optional Dark Mode (Charcoal base) ===== */
+.theme-dark body,
+body.theme-dark {
+  background: var(--charcoal-grey);
+  color: #FFFFFF;
+}
+
+body.theme-dark header,
+body.theme-dark .value-card,
+body.theme-dark .feature-card,
+body.theme-dark .why,
+body.theme-dark .faq,
+body.theme-dark .trust-bar,
+body.theme-dark .step {
+  background: #101015;
+  border-color: rgba(255,255,255,0.06);
+}
+
+body.theme-dark .value-card p,
+body.theme-dark .feature-card p,
+body.theme-dark .why-item p,
+body.theme-dark .faq p,
+body.theme-dark footer {
+  color: #D7DCE5;
+}
+
+body.theme-dark .security {
+  background: rgba(229,239,249,0.08); /* muted sky-blue */
+  border-color: rgba(255,255,255,0.06);
+}
+
+body.theme-dark a:hover {
+  color: var(--accent-teal);
+}
+
+/* ===== Mobile polish ===== */
+
+/* Kill any accidental horizontal scroll on small screens */
+html, body { max-width: 100%; overflow-x: hidden; }
+
+/* Base spacing + container breathing room on phones */
+.container { width: min(1120px, calc(100% - 1.5rem)); } /* ~12px gutters on XS */
+
+/* HERO */
+.hero{
+  padding: clamp(3rem, 8vw, 5rem) 0 clamp(2rem, 6vw, 4rem);
+  text-align: center;
+}
+.hero .pill{
+  white-space: normal;           /* allow wrapping */
+  padding: .35rem .65rem;
+  font-size: .78rem;
+  border-radius: 9999px;
+  display: inline-block;
+  max-width: 90%;
+}
+.hero h1{
+  font-size: clamp(1.85rem, 8vw, 3.1rem);
+  line-height: 1.12;
+  letter-spacing: .2px;
+  margin-bottom: .75rem;
+}
+.hero p{
+  font-size: clamp(1rem, 3.8vw, 1.2rem);
+  max-width: 30rem;
+  margin: 0 auto 1.25rem;
+}
+.hero .btn-primary{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;           /* thumb size */
+  padding: .7rem 1.1rem;
+  width: min(100%, 22rem);
+}
+.hero .link-ghost{ 
+  display: inline-block; 
+  margin-top: .5rem;
+}
+
+/* TRUST BAR */
+.trust-bar{
+  padding: 1.25rem;
+  margin-top: 1.25rem;      /* no overlap with hero */
+  border-radius: 14px;
+}
+.trust-items{
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+.trust-item{
+  padding: .5rem .25rem;
+}
+.trust-item svg{
+  width: 26px; height: 26px; padding: 5px;
+  border-radius: 8px;
+}
+.trust-item p{
+  font-size: 1rem;
+  line-height: 1.35;
+}
+
+/* STEPS / FEATURES / VALUE CARDS = single column and airy tap targets */
+.steps, .features, .value-props{
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+.step, .feature-card, .value-card{
+  padding: 1.25rem 1rem;
+}
+.step svg, .feature-card svg{ width: 34px; height: 34px; }
+
+/* WHY / SECURITY / FAQ titles */
+.section-title{
+  font-size: clamp(1.35rem, 5.2vw, 2rem);
+  margin-bottom: 1.25rem;
+}
+
+/* FAQ accordions – bigger touch area */
+.faq details{ padding: .5rem 0; }
+.faq summary{ min-height: 44px; display: flex; align-items: center; }
+
+/* CTA band (if you use it later) */
+.cta-band{
+  padding: 2.5rem 1rem;
+  border-radius: 12px;
+}
+.cta-band a{
+  width: min(100%, 22rem);
+  display: inline-flex;
+  align-items:center; justify-content:center;
+  min-height: 44px;
+}
+
+/* Extra-tight devices */
+@media (max-width: 360px){
+  .container{ width: min(1120px, calc(100% - 1rem)); }
+  .hero h1{ font-size: 1.75rem; }
+  .hero .pill{ font-size: .72rem; padding: .3rem .55rem; }
+}
+/* ===== Mobile overflow fix for Why Qwak? ===== */
+#why-qwak .why { padding: 1.25rem 1rem; }
+
+#why-qwak .why-list{
+  display: grid;
+  grid-template-columns: 1fr;   /* single column on phones */
+  gap: 1rem;
+}
+
+#why-qwak .why-item{
+  display: flex;
+  align-items: flex-start;
+  gap: .75rem;
+}
+
+#why-qwak .why-item svg{
+  flex: 0 0 28px;               /* fixed icon width */
+  width: 28px; height: 28px;
+  margin-top: .15rem;
+  color: var(--accent-teal);
+}
+
+#why-qwak .why-item > div{
+  min-width: 0;                 /* 💡 allow wrapping inside flex row */
+  overflow-wrap: anywhere;      /* break long strings if needed */
+  word-break: break-word;
+}
+
+#why-qwak .why-item h5{
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: var(--font-weight-semi);
+  color: var(--primary-navy);
+} /* ← close it */
+
+
+#security .security ul {
+  display: grid;
+  grid-template-columns: 1fr;     /* one column on phones */
+  gap: 1rem;
+}
+
+#security .security li {
+  display: flex;
+  align-items: flex-start;
+  gap: .75rem;
+}
+
+#security .security li svg {
+  flex: 0 0 28px;                 /* fixed icon column */
+  width: 28px; 
+  height: 28px;
+  margin-top: .15rem;
+  color: var(--accent-teal);
+}
+
+/* 💡 Key lines: let the text column shrink + wrap */
+#security .security li p,
+#security .security a {
+  min-width: 0;                   /* allow flex child to shrink */
+  overflow-wrap: anywhere;        /* wrap long words/phrases */
+  word-break: break-word;
+  margin: 0;
+  line-height: 1.45;
+  font-size: 1rem;
+}
+
+/* Optional: ultra‑small devices */
+@media (max-width: 360px){
+  #security .security { padding: 1rem .75rem; }
+}
+/* Optional: tighten header padding so the logo doesn’t feel oversized */
+.site-header{ padding: 0.85rem 1.5rem; }
+
+/* Slightly tighter header to keep the logo feeling balanced */
+.site-header{ padding: 0.9rem 1.5rem; }
+body {
+  padding-top: 70px; /* adjust to your header’s actual height */
+}
+body {
+  padding-top: 80px; /* adjust to your header height */
+}
+
+/* === Qwak fixed full-width header (final) === */
+.site-header{
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  background: var(--primary-navy);
+  padding: 0.9rem 1.5rem;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+
+.header-inner{
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Dark logo sizing — single source of truth */
+.site-header .logo img.logo-lockup{
+  height: clamp(40px, 4vw, 56px);
+  width: auto;
+  display: block;
+}
+
+/* Push content below fixed header */
+:root { --header-h: 80px; }
+body  { padding-top: var(--header-h); }

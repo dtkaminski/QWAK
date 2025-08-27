@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en" id="top">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Qwak — AI Life-Admin Agent</title>
+
+<script>
+  (function () {
+    // 1) Tell the browser not to auto-restore scroll
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+
+    // 2) If the URL has a hash (e.g. #features) on reload, remove it so it can't jump down
+    if (location.hash) {
+      history.replaceState(null, '', location.pathname + location.search);
+    }
+
+    // 3) Force top as early as possible + on load + when coming from bfcache
+    window.scrollTo(0, 0);
+    window.addEventListener('load', function () { window.scrollTo(0, 0); });
+    window.addEventListener('pageshow', function () { window.scrollTo(0, 0); });
+  })();
+</script>
+
+
+  <style>
+    /* ===== Brand tokens ===== */
+    :root{
+      --primary-navy:#0C1B33; --white:#FFFFFF; --duck-yellow:#FFC933;
+      --pixel-purple:#6C3BFF; --teal-signal:#00C2B2; --sky-blue:#E5EFF9;
+      --slate-grey:#445566; --soft-grey:#E0E7F0; --charcoal-grey:#1E1E24;
+      --pixel-pink:#FF3F81; --mint-green:#62F4D4;
+
+      --bg:var(--white); --text:var(--primary-navy); --card:var(--white);
+      --cta:var(--pixel-purple); --accent:var(--teal-signal);
+
+      --h1: clamp(2.1rem, 4.8vw, 3.6rem);
+      --h2: clamp(1.6rem, 3.4vw, 2.35rem);
+      --bold:800; --semibold:700;
+
+      /* header height for layout offset */
+      --header-h: 80px;
+    }
+
+    /* ===== Reset / base ===== */
+    *,*::before,*::after{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Inter,Roboto,sans-serif;
+      color:var(--text); background:var(--bg); line-height:1.6; overflow-x:hidden;
+      padding-top: var(--header-h); /* push content below fixed header */
+    }
+    img{max-width:100%;display:block}
+    a{color:var(--accent);text-decoration:none}
+    a:hover{color:var(--primary-navy)}
+    .container{width:min(1120px,calc(100% - 1.5rem));margin-inline:auto}
+
+    /* ===== Header (single source of truth) ===== */
+    .site-header{
+      position: fixed;
+      top: 0; left: 0; right: 0;           /* span full viewport width */
+      width: 100%;
+      z-index: 1000;
+      background: var(--primary-navy);
+      padding: 0.9rem 1.5rem;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+    .header-inner{ max-width:1200px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; }
+    .logo{ display:inline-flex; align-items:center; text-decoration:none; }
+    .site-header .logo img.logo-lockup{ height: clamp(44px, 4.5vw, 68px); width:auto; display:block; }
+
+    /* Hamburger */
+    .menu-toggle{
+      display:flex; flex-direction:column; justify-content:space-between;
+      width:26px; height:20px; background:none; border:0; cursor:pointer;
+    }
+    .menu-toggle span{ display:block; height:3px; width:100%; background:#fff; border-radius:2px; }
+
+    /* ===== Drawer Nav ===== */
+    .nav-drawer{
+      position: fixed; inset: 0 0 0 auto; width: min(84vw, 360px);
+      background: var(--card); color: var(--text);
+      box-shadow: -8px 0 24px rgba(0,0,0,.15);
+      transform: translateX(100%); transition: transform .28s ease;
+      z-index: 1100; display:flex; flex-direction:column;
+      border-left: 1px solid var(--soft-grey);
+    }
+    .nav-drawer[data-open="true"]{ transform: translateX(0); }
+    .nav-drawer__header{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:.85rem 1rem; background: var(--primary-navy); color:#fff;
+    }
+    .nav-drawer__header .brand{ display:flex; align-items:center; gap:.5rem; font-weight:800; }
+    .nav-drawer__header img{ width:22px; height:22px; }
+    .menu-close{ position:relative; width:26px; height:26px; border:0; background:none; cursor:pointer; }
+    .menu-close span{ position:absolute; left:4px; right:4px; top:50%; height:3px; background:#fff; border-radius:2px; }
+    .menu-close span:first-child{ transform:translateY(-50%) rotate(45deg); }
+    .menu-close span:last-child{ transform:translateY(-50%) rotate(-45deg); }
+    .nav-drawer__list{ list-style:none; margin:.25rem 0 1rem; padding:0; }
+    .nav-drawer__list li{ border-bottom:1px solid var(--soft-grey); }
+    .nav-drawer__list a{ display:block; padding:.95rem 1rem; font-weight:700; color:var(--text); text-decoration:none; }
+    .nav-drawer__list a:hover{ color:var(--accent); }
+    .nav-drawer__cta{ margin: 0 1rem 1rem; width:auto; text-align:center; min-height:48px; border-radius:10px; }
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:.7rem 1.1rem;border-radius:8px;font-weight:var(--semibold)}
+    .btn-primary{background:var(--cta);color:#fff}
+    .btn-primary:hover{background:#5a2fe0}
+    .nav-backdrop{ position:fixed; inset:0; background:rgba(12,27,51,.45); z-index:1090; }
+    .body--lock{ overflow:hidden; }
+
+    /* ===== Hero ===== */
+    .hero{
+      background:var(--primary-navy);color:#fff;text-align:center;
+      padding: clamp(3rem,8vw,6rem) 0 clamp(2rem,6vw,5rem);
+    }
+    .pill{display:inline-block;background:var(--accent);color:var(--primary-navy);padding:.4rem .75rem;border-radius:9999px;font-size:.8rem;font-weight:var(--semibold);letter-spacing:.06em;text-transform:uppercase;margin-bottom:1rem;max-width:90%}
+    .hero h1{font-size:var(--h1);line-height:1.12;margin:.25rem 0 1rem}
+    .hero p{color:var(--sky-blue);max-width:42rem;margin:0 auto 1.25rem;font-size:clamp(1rem,3.8vw,1.2rem)}
+    .hero-ctas{display:flex;justify-content:center;gap:.75rem;flex-wrap:wrap}
+
+    /* ===== Sections / cards ===== */
+    .section{padding:4rem 0}
+    .section-title{font-weight:var(--bold);font-size:var(--h2);text-align:center;color:var(--primary-navy);margin:0 0 1.5rem}
+    .card{background:var(--card);border:1px solid var(--soft-grey);border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.05);padding:1.5rem}
+
+    .grid{display:grid;gap:1.25rem}
+    .grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    @media (max-width:900px){.grid-3{grid-template-columns:1fr}}
+
+    .row{display:flex;gap:.75rem;align-items:flex-start}
+    .grow{min-width:0}
+    .icon{width:28px;height:28px;color:var(--accent);flex:0 0 28px}
+    .muted{color:var(--slate-grey)}
+
+    /* Trust */
+    .trust{margin-top:2rem}
+    .trust .card{padding:1.25rem}
+    .trust-list{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1rem}
+    @media (max-width:900px){.trust-list{grid-template-columns:1fr}}
+    .trust .icon{background:var(--sky-blue);border-radius:8px;padding:6px}
+    .trust p{font-weight:var(--semibold);color:var(--primary-navy);margin:0}
+
+    /* Tiles */
+    .tile{transition:transform .2s,box-shadow .2s}
+    .tile:hover{transform:translateY(-4px);box-shadow:0 6px 16px rgba(0,0,0,.06)}
+    .tile svg{width:34px;height:34px;margin-bottom:.5rem}
+    .tile h3,.tile h4{margin:.25rem 0 .4rem;color:var(--primary-navy)}
+    .tile p{margin:0;color:var(--slate-grey)}
+
+    /* Why / Security / FAQ specifics */
+    .why .why-item{padding:.25rem 0}
+    .why .why-item h5{margin:0 0 .25rem;font-size:1.05rem;line-height:1.25}
+    .why .why-item p{margin:0}
+
+    .security.card{background:var(--sky-blue)}
+    .security ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr;gap:1rem}
+    .security li{display:flex;gap:.75rem;align-items:flex-start}
+    .security .icon{margin-top:.15rem}
+    .security p,.security a{min-width:0;overflow-wrap:anywhere;word-break:break-word;margin:0;line-height:1.45}
+    .security a{text-decoration:underline}
+
+    .faq details{border-bottom:1px solid var(--soft-grey);padding:.6rem 0}
+    .faq summary{cursor:pointer;list-style:none;font-weight:var(--semibold);min-height:44px;display:flex;align-items:center}
+    .faq p{margin:.35rem 0 0}
+
+    /* Footer */
+    footer{padding:2rem 0;text-align:center;color:var(--slate-grey);font-size:.95rem}
+
+    /* ===== Mobile tweaks ===== */
+    html,body { max-width:100%; overflow-x:hidden; }
+    @media (max-width:360px){
+      .container{ width:min(1120px, calc(100% - 1rem)); }
+      .hero h1{ font-size: 1.75rem; }
+      .pill{ font-size:.72rem; padding:.3rem .55rem; }
+    }
+  </style>
+
+  <!-- ===== ICON SPRITE ===== -->
+  <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
+    <defs>
+      <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 2l7 4v6c0 5.25-3.5 10-7 10s-7-4.75-7-10V6l7-4z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12l5 5L19 7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-eye" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+      <symbol id="i-doc" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2" ry="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 6h8M8 10h8M8 14h4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+      <symbol id="i-inbox" viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 6h14a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-files" viewBox="0 0 24 24"><path d="M6 3h12a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V5a2 2 0 012-2z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M16 3v3a1 1 0 001 1h3M9 12h6M9 16h6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+      <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-compare" viewBox="0 0 24 24"><path d="M12 2v7m0 0L9 6m3 3l3-3M12 22v-7m0 0l3 3m-3-3l-3 3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-safe" viewBox="0 0 24 24"><path d="M12 21c6 0 10-6 10-10V5l-10-4-10 4v6c0 4 4 10 10 10z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M9 13l2 2 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-bell" viewBox="0 0 24 24"><path d="M14 10V5a2 2 0 10-4 0v5a4 4 0 00-4 4v2l-1.38 1.38A1 1 0 007 18h10a1 1 0 00.72-1.62L17 16v-2a4 4 0 00-3-3.87z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 21h8" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+      <symbol id="i-bars" viewBox="0 0 24 24"><path d="M3 3v18h18" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M7 16h2v-7H7v7zm4 0h2V7h-2v9zm4 0h2v-4h-2v4z" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+      <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 2l1.79 5.5h5.79l-4.69 3.4 1.79 5.5-4.69-3.4-4.69 3.4 1.79-5.5L4.42 7.5h5.79z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+      <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="10" rx="2" ry="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M12 15v2m0-10a3 3 0 00-3 3v2a3 3 0 006 0v-2a3 3 0 00-3-3zm0 0V5a3 3 0 013 3v2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+      <symbol id="i-key" viewBox="0 0 24 24"><path d="M12 15l9-9m-9 9v4a2 2 0 11-4 0v-4m4 0h4a2 2 0 100-4h-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-users" viewBox="0 0 24 24"><circle cx="8" cy="7" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="16" cy="7" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M2 21v-2a4 4 0 014-4h4a4 4 0 014 4v2M14 12h6a4 4 0 014 4v2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+      <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M7 11l5-5m0 0l5 5m-5-5v12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-heartshield" viewBox="0 0 24 24"><path d="M12 21s8-4 8-10V5l-8-3-8 3v6c0 6 8 10 8 10z" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+    </defs>
+  </svg>
+</head>
+
+<body>
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="/" class="logo" aria-label="Qwak home">
+        <img src="brand/qwak-logo-dark.png" alt="Qwak" class="logo-lockup" />
+      </a>
+      <button class="menu-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="nav-drawer">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Drawer -->
+  <nav id="nav-drawer" class="nav-drawer" aria-hidden="true">
+    <div class="nav-drawer__header">
+      <span class="brand">
+        <img src="brand/qwak-logo-dark.png" alt="" />
+        Qwak
+      </span>
+      <button class="menu-close" aria-label="Close menu"><span></span><span></span></button>
+    </div>
+    <ul class="nav-drawer__list">
+      <li><a href="#how-it-works">How it works</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#why-qwak">Why Qwak?</a></li>
+      <li><a href="#security">Security</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+    <div class="nav-drawer__cta">
+      <a class="btn btn-primary" href="#waitlist-form">Join the Waitlist</a>
+    </div>
+  </nav>
+  <div class="nav-backdrop" hidden></div>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero">
+      <div class="container">
+        <span class="pill">Introducing the AI Life-Admin Agent</span>
+        <h1>Time and money, back to you.</h1>
+        <p>Qwak captures your bills, contracts, receipts and warranties.
+        It tracks renewals, sends reminders, and lines up better deals—only acting when you approve.</p>
+        <div class="hero-ctas">
+          <a class="btn btn-primary" id="waitlist" href="#waitlist-form">Join the Waitlist</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- TRUST -->
+    <section class="section trust" aria-label="Trust and assurances">
+      <div class="container card">
+        <div class="trust-list">
+          <div class="row"><svg class="icon"><use href="#i-shield"/></svg><p>Bank-grade encryption</p></div>
+          <div class="row"><svg class="icon"><use href="#i-check"/></svg><p>You approve every action</p></div>
+          <div class="row"><svg class="icon"><use href="#i-eye"/></svg><p>Transparent offers</p></div>
+          <div class="row"><svg class="icon"><use href="#i-doc"/></svg><p>GDPR compliant</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section id="how-it-works" class="section">
+      <div class="container">
+        <h2 class="section-title">How Qwak Works</h2>
+        <div class="grid grid-3">
+          <div class="card tile"><svg class="icon" style="margin-bottom:.25rem"><use href="#i-inbox"/></svg><h3>Send It</h3><p class="muted">Your bills, contracts and receipts are auto-captured — from everyday admin to utilities.</p></div>
+          <div class="card tile"><svg class="icon" style="margin-bottom:.25rem"><use href="#i-files"/></svg><h3>Sort It</h3><p class="muted">Your AI Agent decodes the details, tracks deadlines, and spots better deals on your utilities.</p></div>
+          <div class="card tile"><svg class="icon" style="margin-bottom:.25rem"><use href="#i-bolt"/></svg><h3>Save It</h3><p class="muted">One tap and Qwak switches you, cancels the waste, and gives you back time, money and headspace.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VALUE PROPS -->
+    <section class="section">
+      <div class="container">
+        <h2 class="section-title">Why you'll love it</h2>
+        <div class="grid grid-3">
+          <div class="card tile"><h4>Smarter automation</h4><p class="muted">Qwak auto-captures your bills and contracts — always scanning for better utility deals and hidden risks.</p></div>
+          <div class="card tile"><h4>Real savings</h4><p class="muted">From energy to broadband to subscriptions, typical users save hundreds each year without lifting a finger.</p></div>
+          <div class="card tile"><h4>Less admin, more sanity</h4><p class="muted">No more chasing paperwork or missing deadlines. Qwak clears the clutter so you get hours back each month.</p></div>
+          <div class="card tile"><h4>You stay in control</h4><p class="muted">Qwak only acts when you say yes — every switch and cancellation is approved by you.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section id="features" class="section">
+      <div class="container">
+        <h2 class="section-title">Powerful Features</h2>
+        <div class="grid grid-3">
+          <div class="card tile"><svg class="icon"><use href="#i-inbox"/></svg><h4>Your Smart Agent</h4><p class="muted">Auto-captures bills, contracts, and receipts — no forwarding fuss.</p></div>
+          <div class="card tile"><svg class="icon"><use href="#i-doc"/></svg><h4>Contract Tracker</h4><p class="muted">Live countdowns so you never miss a renewal.</p></div>
+          <div class="card tile"><svg class="icon"><use href="#i-compare"/></svg><h4>Switching Engine</h4><p class="muted">Always-on comparisons for the best utility deals.</p></div>
+          <div class="card tile"><svg class="icon"><use href="#i-safe"/></svg><h4>Receipts & Warranties Vault</h4><p class="muted">All your proofs stored and retrievable in seconds.</p></div>
+          <div class="card tile"><svg class="icon"><use href="#i-bell"/></svg><h4>Reminders & Nudges</h4><p class="muted">AI prompts so deadlines and payments never slip.</p></div>
+          <div class="card tile"><svg class="icon"><use href="#i-bars"/></svg><h4>Monthly Summary</h4><p class="muted">One simple digest with actions, savings, and insights.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WHY QWAK -->
+    <section id="why-qwak" class="section">
+      <div class="container">
+        <div class="card why">
+          <h2 class="section-title">Why Qwak?</h2>
+          <div class="grid">
+            <div class="row why-item"><svg class="icon"><use href="#i-star"/></svg><div class="grow"><h5>Not a bank. Not a budgeting app.</h5><p class="muted">Qwak is a new category: your AI life-admin agent.</p></div></div>
+            <div class="row why-item"><svg class="icon"><use href="#i-shield"/></svg><div class="grow"><h5>Security you can trust.</h5><p class="muted">Industry-leading protection keeps your data safe.</p></div></div>
+            <div class="row why-item"><svg class="icon"><use href="#i-arrow"/></svg><div class="grow"><h5>Always your call.</h5><p class="muted">You approve every change. Qwak only acts when you say so.</p></div></div>
+            <div class="row why-item"><svg class="icon"><use href="#i-heartshield"/></svg><div class="grow"><h5>Aligned with you.</h5><p class="muted">No hidden agendas. The best deal is always put first.</p></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECURITY -->
+    <section id="security" class="section">
+      <div class="container">
+        <div class="card security">
+          <h2 class="section-title">Security you can trust</h2>
+          <ul>
+            <li class="row"><svg class="icon"><use href="#i-lock"/></svg><p class="grow">Locked down. AES-256 encryption, end to end.</p></li>
+            <li class="row"><svg class="icon"><use href="#i-key"/></svg><p class="grow">Transparent. Audit logs + OAuth for secure access.</p></li>
+            <li class="row"><svg class="icon"><use href="#i-compare"/></svg><p class="grow">Your call. Download or delete your data anytime.</p></li>
+            <li class="row"><svg class="icon"><use href="#i-users"/></svg><p class="grow">Privacy-first. GDPR-compliant from day one.</p></li>
+          </ul>
+          <p style="margin-top:1rem"><a href="security-whitepaper.pdf" target="_blank" rel="noopener">Read our Security Whitepaper (PDF)</a></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="section">
+      <div class="container">
+        <div class="card faq">
+          <h2 class="section-title">FAQs</h2>
+          <details><summary>What makes Qwak different?</summary><p>We’re not a bank, budgeting app or comparison site. Qwak is your AI life-admin agent — capturing your bills, organising your contracts, and switching your utilities when better deals appear.</p></details>
+          <details><summary>What can Qwak help with?</summary><p>Energy, broadband, insurance, phone, car, subscriptions — plus all the everyday admin like receipts, warranties and renewals.</p></details>
+          <details><summary>Do I have to upload everything manually?</summary><p>No. Qwak auto-captures your bills and contracts, so you don’t have to forward or file things yourself.</p></details>
+          <details><summary>Will Qwak ever switch me without permission?</summary><p>Never. Qwak only acts when you approve. You’re always in control.</p></details>
+          <details><summary>Do you compare the whole market?</summary><p>We work with trusted providers and update rates regularly. Our methodology is transparent and we explain which providers we include.</p></details>
+          <details><summary>How do you keep my data safe?</summary><p>Bank-grade encryption, GDPR compliance and full transparency. You can download or delete your data anytime.</p></details>
+          <details><summary>How does Qwak make money?</summary><p>We disclose any commission we earn, and we always show you the best option first. Our incentives are aligned with yours.</p></details>
+          <details><summary>Can I leave anytime?</summary><p>Yes — there are no lock-ins. If Qwak isn’t working for you, you can walk away instantly and take your data with you.</p></details>
+          <details><summary>What’s the catch?</summary><p>There isn’t one. You get less admin, more time, and real savings — that’s it.</p></details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>© 2025 Qwak — Built to beat the admin overload.</footer>
+
+  <!-- Drawer JS -->
+  <script>
+    (function(){
+      const openBtn  = document.querySelector('.menu-toggle');
+      const drawer   = document.getElementById('nav-drawer');
+      const closeBtn = drawer.querySelector('.menu-close');
+      const backdrop = document.querySelector('.nav-backdrop');
+      const links    = drawer.querySelectorAll('a[href^="#"]');
+      const body     = document.body;
+
+      function openMenu(){
+        drawer.setAttribute('data-open','true');
+        drawer.setAttribute('aria-hidden','false');
+        openBtn.setAttribute('aria-expanded','true');
+        backdrop.hidden = false;
+        body.classList.add('body--lock');
+        (closeBtn || drawer).focus({preventScroll:true});
+      }
+      function closeMenu(){
+        drawer.setAttribute('data-open','false');
+        drawer.setAttribute('aria-hidden','true');
+        openBtn.setAttribute('aria-expanded','false');
+        backdrop.hidden = true;
+        body.classList.remove('body--lock');
+        openBtn.focus({preventScroll:true});
+      }
+
+      openBtn.addEventListener('click', openMenu);
+      closeBtn.addEventListener('click', closeMenu);
+      backdrop.addEventListener('click', closeMenu);
+      window.addEventListener('keydown', e => {
+        if(e.key === 'Escape' && drawer.getAttribute('data-open')==='true') closeMenu();
+      });
+      links.forEach(a => a.addEventListener('click', closeMenu));
+    })();
+  </script>
+</body>
+</html>
