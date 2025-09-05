@@ -245,17 +245,21 @@
   <div class="nav-backdrop" hidden></div>
 
   <main>
-    <!-- HERO -->
-    <section class="hero">
-      <div class="container">
-        <span class="pill">Introducing the AI Life-Admin Agent</span>
-        <h1>Time and money, back to you.</h1>
-        <p>Qwak captures your bills, contracts, receipts and warranties.
-        It tracks renewals, sends reminders, and lines up better deals—only acting when you approve.</p>
-        <div class="hero-ctas">
-          <a class="btn btn-primary" id="waitlist" href="#waitlist-form">Join the Waitlist</a>
-        </div>
-        <section id="waitlist-form" class="section">
+   <!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <span class="pill">Introducing the AI Life-Admin Agent</span>
+    <h1>Time and money, back to you.</h1>
+    <p>Qwak captures your bills, contracts, receipts and warranties.
+    It tracks renewals, sends reminders, and lines up better deals—only acting when you approve.</p>
+    <div class="hero-ctas">
+      <a class="btn btn-primary" id="waitlist" href="#waitlist-form">Join the Waitlist</a>
+    </div>
+  </div>
+</section>
+
+<!-- WAITLIST (outside hero) -->
+<section id="waitlist-form" class="section">
   <div class="container card" style="max-width:620px;margin-inline:auto">
     <h2 class="section-title" style="margin-bottom:.75rem">Join the waitlist</h2>
     <p class="muted" style="margin:0 0 1rem">Get early access and updates. No spam.</p>
@@ -263,26 +267,21 @@
     <form id="qwak-waitlist"
           action="https://formspree.io/f/xjkekbzp"
           method="POST" novalidate>
-
-      <!-- Optional: name field -->
       <input type="text" name="name" placeholder="Your name (optional)"
              style="width:100%;padding:.85rem 1rem;border:1px solid var(--soft-grey);border-radius:10px;font-size:1rem;margin-bottom:.5rem">
 
       <div style="display:flex;gap:.5rem;flex-wrap:wrap">
-        <input type="email" name="email" required
-               placeholder="your@email.com"
-               aria-label="Email"
+        <input type="email" name="email" required autocomplete="email"
+               placeholder="your@email.com" aria-label="Email"
                style="flex:1;min-width:220px;padding:.85rem 1rem;border:1px solid var(--soft-grey);border-radius:10px;font-size:1rem">
         <button type="submit" class="btn btn-primary" style="min-width:160px">Join the Waitlist</button>
       </div>
 
-      <!-- Honeypot (spam trap) -->
+      <!-- spam trap + metadata -->
       <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" style="display:none">
-      <!-- Helpful metadata -->
       <input type="hidden" name="page" value="qwak.me landing">
       <input type="hidden" name="source" value="waitlist-form">
 
-      <!-- Consent (good practice) -->
       <label style="display:flex;gap:.5rem;align-items:flex-start;margin-top:.75rem;font-size:.9rem;color:var(--slate-grey)">
         <input type="checkbox" name="consent" required style="margin-top:.2rem">
         I agree to receive early-access emails from Qwak. You can unsubscribe anytime.
@@ -292,6 +291,7 @@
     </form>
   </div>
 </section>
+
 
       </div>
     </section>
